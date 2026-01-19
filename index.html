@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outfit Maker 2</title>
+
+<style>
+:root {
+    --bg: #050608;
+    --panel: #0d1117;
+    --accent: #00e5ff;
+    --accent-soft: rgba(0,229,255,0.25);
+    --text: #e6edf3;
+    --danger: #ff4d6d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(circle at top, #0b1220, #000);
+    color: var(--text);
+}
+
+/* ---------- START ---------- */
+
+#startScreen {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#startBox {
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+#startBox h1 {
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent-soft);
+    margin-bottom: 30px;
+}
+
+button {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 12px 22px;
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--accent);
+    color: #000;
+}
+
+/* ---------- APP ---------- */
+
+.hidden {
+    display: none;
+}
+
+#app {
+    max-width: 460px;
+    margin: auto;
+    padding-bottom: 40px;
+    animation: fadeIn 0.6s ease;
+}
+
+.card {
+    background: var(--panel);
+    border-radius: 22px;
+    padding: 16px;
+    margin: 16px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+.card h2 {
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+/* ---------- CAMERA ---------- */
+
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    background: #000;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    margin-bottom: 10px;
+}
+
+video {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 0 20px var(--accent-soft);
+    margin-bottom: 10px;
+}
+
+/* ---------- WARDROBE ---------- */
+
+.category {
+    margin-bottom: 14px;
+}
+
+.category-title {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 6px;
+}
+
+.gallery {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.item {
+    position: relative;
+}
+
+.item img {
+    width: 80px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px var(--accent-soft);
+}
+
+.delete {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* ---------- OUTFIT ---------- */
+
+#outfit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.outfit-img {
+    width: 180px;
+    margin: 6px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px var(--accent-soft);
+    animation: pop 0.3s ease;
+}
+
+/* ---------- ANIM ---------- */
+
+@keyframes fadeIn {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
+
+@keyframes pop {
+    from { opacity: 0; transform: scale(0.9) }
+    to { opacity: 1; transform: scale(1) }
+}
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+<div id="startScreen">
+    <div id="startBox">
+        <h1>OUTFIT MAKER</h1>
+        <button id="startBtn">START</button>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+    <div class="card">
+        <h2>ADD CLOTHING</h2>
+        <select id="category">
+            <option value="genser">Sweater</option>
+            <option value="tshirt">T-Shirt</option>
+            <option value="bukse">Pants</option>
+            <option value="sko">Shoes</option>
+        </select>
+
+        <video id="camera" autoplay playsinline></video>
+        <button id="capture">Capture</button>
+    </div>
+
+    <div class="card">
+        <h2>WARDROBE</h2>
+
+        <div class="category">
+            <div class="category-title">Sweaters</div>
+            <div id="genser" class="gallery"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">T-Shirts</div>
+            <div id="tshirt" class="gallery"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">Pants</div>
+            <div id="bukse" class="gallery"></div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">Shoes</div>
+            <div id="sko" class="gallery"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>GENERATE OUTFIT</h2>
+        <button id="spin">Generate</button>
+        <div id="outfit"></div>
+    </div>
+
+</div>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const startScreen = document.getElementById("startScreen");
+const app = document.getElementById("app");
+const camera = document.getElementById("camera");
+const captureBtn = document.getElementById("capture");
+const categorySelect = document.getElementById("category");
+const spinBtn = document.getElementById("spin");
+const outfitDiv = document.getElementById("outfit");
+
+let stream;
+
+const clothes = JSON.parse(localStorage.getItem("clothes2")) || {
+    genser: [],
+    tshirt: [],
+    bukse: [],
+    sko: []
+};
+
+function save() {
+    localStorage.setItem("clothes2", JSON.stringify(clothes));
+}
+
+function render(type) {
+    const box = document.getElementById(type);
+    box.innerHTML = "";
+
+    clothes[type].forEach((src, index) => {
+        const item = document.createElement("div");
+        item.className = "item";
+
+        const img = document.createElement("img");
+        img.src = src;
+
+        const del = document.createElement("div");
+        del.className = "delete";
+        del.innerText = "×";
+        del.onclick = () => {
+            clothes[type].splice(index, 1);
+            save();
+            renderAll();
+        };
+
+        item.appendChild(img);
+        item.appendChild(del);
+        box.appendChild(item);
+    });
+}
+
+function renderAll() {
+    ["genser","tshirt","bukse","sko"].forEach(render);
+}
+
+startBtn.onclick = async () => {
+    startScreen.classList.add("hidden");
+    app.classList.remove("hidden");
+
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    camera.srcObject = stream;
+};
+
+captureBtn.onclick = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = camera.videoWidth;
+    canvas.height = camera.videoHeight;
+    canvas.getContext("2d").drawImage(camera, 0, 0);
+
+    clothes[categorySelect.value].push(canvas.toDataURL("image/png"));
+    save();
+    renderAll();
+};
+
+spinBtn.onclick = () => {
+    outfitDiv.innerHTML = "Generating...";
+    setTimeout(() => {
+        outfitDiv.innerHTML = "";
+        ["genser","tshirt","bukse","sko"].forEach(type => {
+            if (clothes[type].length > 0) {
+                const img = document.createElement("img");
+                img.className = "outfit-img";
+                img.src = clothes[type][Math.floor(Math.random()*clothes[type].length)];
+                outfitDiv.appendChild(img);
+            }
+        });
+    }, 600);
+};
+
+renderAll();
+</script>
+
+</body>
+</html>
