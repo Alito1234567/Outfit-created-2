@@ -1,335 +1,237 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Outfit Maker 2</title>
-
-<style>
-:root {
-    --bg: #050608;
-    --panel: #0d1117;
-    --accent: #00e5ff;
-    --accent-soft: rgba(0,229,255,0.25);
-    --text: #e6edf3;
-    --danger: #ff4d6d;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: radial-gradient(circle at top, #0b1220, #000);
-    color: var(--text);
-}
-
-/* ---------- START ---------- */
-
-#startScreen {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#startBox {
-    text-align: center;
-    animation: fadeIn 1s ease;
-}
-
-#startBox h1 {
-    font-weight: 600;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-shadow: 0 0 20px var(--accent-soft);
-    margin-bottom: 30px;
-}
-
-button {
-    background: transparent;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    padding: 12px 22px;
-    border-radius: 14px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: var(--accent);
-    color: #000;
-}
-
-/* ---------- APP ---------- */
-
-.hidden {
-    display: none;
-}
-
-#app {
-    max-width: 460px;
-    margin: auto;
-    padding-bottom: 40px;
-    animation: fadeIn 0.6s ease;
-}
-
-.card {
-    background: var(--panel);
-    border-radius: 22px;
-    padding: 16px;
-    margin: 16px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
-}
-
-.card h2 {
-    font-size: 14px;
-    letter-spacing: 1px;
-    color: var(--accent);
-    margin-bottom: 12px;
-}
-
-/* ---------- CAMERA ---------- */
-
-select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 12px;
-    background: #000;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    margin-bottom: 10px;
-}
-
-video {
-    width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 0 20px var(--accent-soft);
-    margin-bottom: 10px;
-}
-
-/* ---------- WARDROBE ---------- */
-
-.category {
-    margin-bottom: 14px;
-}
-
-.category-title {
-    font-size: 13px;
-    opacity: 0.85;
-    margin-bottom: 6px;
-}
-
-.gallery {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-}
-
-.item {
-    position: relative;
-}
-
-.item img {
-    width: 80px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px var(--accent-soft);
-}
-
-.delete {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 20px;
-    height: 20px;
-    background: var(--danger);
-    color: white;
-    border-radius: 50%;
-    font-size: 12px;
-    line-height: 20px;
-    text-align: center;
-    cursor: pointer;
-}
-
-/* ---------- OUTFIT ---------- */
-
-#outfit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.outfit-img {
-    width: 180px;
-    margin: 6px;
-    border-radius: 18px;
-    box-shadow: 0 0 25px var(--accent-soft);
-    animation: pop 0.3s ease;
-}
-
-/* ---------- ANIM ---------- */
-
-@keyframes fadeIn {
-    from { opacity: 0 }
-    to { opacity: 1 }
-}
-
-@keyframes pop {
-    from { opacity: 0; transform: scale(0.9) }
-    to { opacity: 1; transform: scale(1) }
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Monster Survivor 2D</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #2c3e50; font-family: sans-serif; }
+        canvas { display: block; }
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        #hp-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 25px;
+            background: #444;
+            border: 3px solid #fff;
+        }
+        #hp-bar {
+            width: 100%;
+            height: 100%;
+            background: #e74c3c;
+            transition: width 0.2s;
+        }
+    </style>
 </head>
-
 <body>
 
-<!-- START -->
-<div id="startScreen">
-    <div id="startBox">
-        <h1>OUTFIT MAKER</h1>
-        <button id="startBtn">START</button>
-    </div>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
-    <div class="card">
-        <h2>ADD CLOTHING</h2>
-        <select id="category">
-            <option value="genser">Sweater</option>
-            <option value="tshirt">T-Shirt</option>
-            <option value="bukse">Pants</option>
-            <option value="sko">Shoes</option>
-        </select>
-
-        <video id="camera" autoplay playsinline></video>
-        <button id="capture">Capture</button>
+    <div id="ui">
+        <strong>KONTROLLER:</strong><br>
+        Flytt: WASD | Bil: E | Plukk opp stav: T<br>
+        Sikt: Mus | Skyt: Venstreklikk
     </div>
 
-    <div class="card">
-        <h2>WARDROBE</h2>
+    <div id="hp-container"><div id="hp-bar"></div></div>
 
-        <div class="category">
-            <div class="category-title">Sweaters</div>
-            <div id="genser" class="gallery"></div>
-        </div>
-
-        <div class="category">
-            <div class="category-title">T-Shirts</div>
-            <div id="tshirt" class="gallery"></div>
-        </div>
-
-        <div class="category">
-            <div class="category-title">Pants</div>
-            <div id="bukse" class="gallery"></div>
-        </div>
-
-        <div class="category">
-            <div class="category-title">Shoes</div>
-            <div id="sko" class="gallery"></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>GENERATE OUTFIT</h2>
-        <button id="spin">Generate</button>
-        <div id="outfit"></div>
-    </div>
-
-</div>
+    <canvas id="gameCanvas"></canvas>
 
 <script>
-const startBtn = document.getElementById("startBtn");
-const startScreen = document.getElementById("startScreen");
-const app = document.getElementById("app");
-const camera = document.getElementById("camera");
-const captureBtn = document.getElementById("capture");
-const categorySelect = document.getElementById("category");
-const spinBtn = document.getElementById("spin");
-const outfitDiv = document.getElementById("outfit");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-let stream;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-const clothes = JSON.parse(localStorage.getItem("clothes2")) || {
-    genser: [],
-    tshirt: [],
-    bukse: [],
-    sko: []
+const keys = {};
+const worldSize = 3000;
+const camera = { x: 0, y: 0 };
+
+// Spiller data
+const player = {
+    x: 500, y: 500,
+    size: 20,
+    speed: 4,
+    hp: 100,
+    maxHp: 100,
+    hasWeapon: false,
+    inVehicle: false
 };
 
-function save() {
-    localStorage.setItem("clothes2", JSON.stringify(clothes));
-}
+// Objekter i verden
+const projectiles = [];
+const particles = [];
+const trees = Array.from({length: 40}, () => ({
+    x: Math.random() * worldSize,
+    y: Math.random() * worldSize
+}));
 
-function render(type) {
-    const box = document.getElementById(type);
-    box.innerHTML = "";
+const monsters = Array.from({length: 10}, () => ({
+    x: Math.random() * worldSize,
+    y: Math.random() * worldSize,
+    hp: 1,
+    speed: 1.5
+}));
 
-    clothes[type].forEach((src, index) => {
-        const item = document.createElement("div");
-        item.className = "item";
+const staffItem = { x: 600, y: 600, active: true };
 
-        const img = document.createElement("img");
-        img.src = src;
+// Bil
+const car = { x: 800, y: 800, w: 50, h: 90, angle: 0, speed: 0, friction: 0.97 };
 
-        const del = document.createElement("div");
-        del.className = "delete";
-        del.innerText = "×";
-        del.onclick = () => {
-            clothes[type].splice(index, 1);
-            save();
-            renderAll();
-        };
+// Input
+window.addEventListener("keydown", (e) => keys[e.key.toLowerCase()] = true);
+window.addEventListener("keyup", (e) => keys[e.key.toLowerCase()] = false);
+window.addEventListener("mousedown", () => {
+    if (player.hasWeapon && !player.inVehicle) shoot();
+});
 
-        item.appendChild(img);
-        item.appendChild(del);
-        box.appendChild(item);
+function shoot() {
+    const angle = Math.atan2(mouseY + camera.y - player.y, mouseX + camera.x - player.x);
+    projectiles.push({
+        x: player.x,
+        y: player.y,
+        vx: Math.cos(angle) * 10,
+        vy: Math.sin(angle) * 10
     });
 }
 
-function renderAll() {
-    ["genser","tshirt","bukse","sko"].forEach(render);
-}
+let mouseX = 0, mouseY = 0;
+window.addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
 
-startBtn.onclick = async () => {
-    startScreen.classList.add("hidden");
-    app.classList.remove("hidden");
+window.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === 't' && !player.inVehicle) {
+        if (Math.hypot(player.x - staffItem.x, player.y - staffItem.y) < 50) {
+            player.hasWeapon = true;
+            staffItem.active = false;
+        }
+    }
+    if (e.key.toLowerCase() === 'e') {
+        if (!player.inVehicle && Math.hypot(player.x - car.x, player.y - car.y) < 70) {
+            player.inVehicle = true;
+        } else if (player.inVehicle) {
+            player.inVehicle = false;
+            player.x += 60;
+        }
+    }
+});
 
-    stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    camera.srcObject = stream;
-};
+function update() {
+    // Bevegelse
+    if (!player.inVehicle) {
+        if (keys['w']) player.y -= player.speed;
+        if (keys['s']) player.y += player.speed;
+        if (keys['a']) player.x -= player.speed;
+        if (keys['d']) player.x += player.speed;
+    } else {
+        if (keys['w']) car.speed += 0.2;
+        if (keys['s']) car.speed -= 0.1;
+        car.speed *= car.friction;
+        if (Math.abs(car.speed) > 0.1) {
+            if (keys['a']) car.angle -= 0.05;
+            if (keys['d']) car.angle += 0.05;
+        }
+        car.x += Math.cos(car.angle) * car.speed;
+        car.y += Math.sin(car.angle) * car.speed;
+        player.x = car.x; player.y = car.y;
+    }
 
-captureBtn.onclick = () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = camera.videoWidth;
-    canvas.height = camera.videoHeight;
-    canvas.getContext("2d").drawImage(camera, 0, 0);
-
-    clothes[categorySelect.value].push(canvas.toDataURL("image/png"));
-    save();
-    renderAll();
-};
-
-spinBtn.onclick = () => {
-    outfitDiv.innerHTML = "Generating...";
-    setTimeout(() => {
-        outfitDiv.innerHTML = "";
-        ["genser","tshirt","bukse","sko"].forEach(type => {
-            if (clothes[type].length > 0) {
-                const img = document.createElement("img");
-                img.className = "outfit-img";
-                img.src = clothes[type][Math.floor(Math.random()*clothes[type].length)];
-                outfitDiv.appendChild(img);
+    // Prosjektiler og kollisjon
+    projectiles.forEach((p, pi) => {
+        p.x += p.vx; p.y += p.vy;
+        monsters.forEach((m, mi) => {
+            if (Math.hypot(p.x - m.x, p.y - m.y) < 25) {
+                projectiles.splice(pi, 1);
+                // Lag "splat" partikler
+                for(let i=0; i<5; i++) particles.push({x: m.x, y: m.y, vx: (Math.random()-0.5)*4, vy: (Math.random()-0.5)*4, life: 30});
+                monsters.splice(mi, 1);
             }
         });
-    }, 600);
-};
+    });
 
-renderAll();
+    // Monster AI og skade
+    monsters.forEach(m => {
+        const dist = Math.hypot(player.x - m.x, player.y - m.y);
+        if (dist < 400) {
+            m.x += ((player.x - m.x) / dist) * m.speed;
+            m.y += ((player.y - m.y) / dist) * m.speed;
+        }
+        if (dist < 30 && !player.inVehicle) {
+            player.hp -= 0.5;
+            document.getElementById("hp-bar").style.width = player.hp + "%";
+        }
+    });
+
+    if (player.hp <= 0) location.reload();
+
+    camera.x = player.x - canvas.width / 2;
+    camera.y = player.y - canvas.height / 2;
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(-camera.x, -camera.y);
+
+    // Bakgrunn
+    ctx.fillStyle = "#27ae60";
+    ctx.fillRect(0, 0, worldSize, worldSize);
+
+    // Trær
+    trees.forEach(t => {
+        ctx.fillStyle = "#795548"; ctx.fillRect(t.x-5, t.y, 10, 20);
+        ctx.fillStyle = "#1b5e20"; ctx.beginPath(); ctx.arc(t.x, t.y, 20, 0, Math.PI*2); ctx.fill();
+    });
+
+    if (staffItem.active) {
+        ctx.fillStyle = "gold"; ctx.fillRect(staffItem.x, staffItem.y, 10, 30);
+    }
+
+    // Monstre
+    monsters.forEach(m => {
+        ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(m.x, m.y, 15, 0, Math.PI*2); ctx.fill();
+    });
+
+    // Partikler (Splat)
+    particles.forEach((p, i) => {
+        ctx.fillStyle = "rgba(255, 0, 0, "+p.life/30+")";
+        ctx.fillRect(p.x, p.y, 4, 4);
+        p.x += p.vx; p.y += p.vy; p.life--;
+        if(p.life <= 0) particles.splice(i, 1);
+    });
+
+    // Skudd
+    projectiles.forEach(p => {
+        ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
+    });
+
+    // Bil
+    ctx.save(); ctx.translate(car.x, car.y); ctx.rotate(car.angle);
+    ctx.fillStyle = "#333"; ctx.fillRect(-car.w/2, -car.h/2, car.w, car.h); ctx.restore();
+
+    // Spiller
+    if (!player.inVehicle) {
+        ctx.fillStyle = "#3498db"; ctx.beginPath(); ctx.arc(player.x, player.y, player.size, 0, Math.PI*2); ctx.fill();
+    }
+
+    ctx.restore();
+    requestAnimationFrame(draw);
+}
+
+setInterval(update, 1000/60);
+draw();
 </script>
-
 </body>
 </html>
